@@ -12,6 +12,9 @@ lessons that later evidence contradicts.
 - (cash_st - debt_st) / cap, group_rank by subindustry (USA TOP3000 D1, subindustry
   neutralization): train Sharpe 0.01, test Sharpe 1.02. No edge over the train period,
   so the test number is not evidence. Read train/test splits before tuning.
+- Same with ts_backfill(63) and industry grouping/neutralization: train Sharpe -0.01,
+  test 0.97. Dividing by cap turns it into a value signal, which likely inherits value's
+  flat 2010s and recent rebound. Cash vs short-term debt is dropped as a standalone idea.
 
 ## Turnover and decay
 
