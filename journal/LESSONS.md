@@ -22,6 +22,11 @@ lessons that later evidence contradicts.
 - cash_st / debt_st level, neutralized within subindustry AND size decile: -0.72, -0.01,
   -1.61, -1.03 (aggregate -0.87). Reversed, "lean on cash vs same-size peers" is the
   only version of this idea that is positive in every train year.
+- Factor-momentum timing (126d trailing factor return sign) did not rescue it: timed
+  ts_rank liquidity yearly -2.18, -0.34, +0.07, +1.59, test 2023 +0.51 (turnover 30% in
+  2019 from flips); timed + reversed level: train 0.73 (-0.77, -0.25, +1.54, +1.33) but
+  test 2023 -0.58. About 11 simulations on this one hypothesis with no stable edge:
+  stop. Tutorial hint examples are not guaranteed to pass in the current IS window.
 
 ## Turnover and decay
 
