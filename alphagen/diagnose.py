@@ -143,6 +143,13 @@ def diagnose(entry: Entry, journal: Journal, years: float = DEFAULT_IS_YEARS) ->
             detail = "decay smooths positions and cuts turnover"
         if step is not None:
             actions.append(Action("decay", f"re-run with Decay {step}", detail, settings={"decay": step}))
+        # For fast signals (reversal), cutting turnover often costs more Sharpe than it saves;
+        # raising returns with magnitude-weighted positions (rank -> zscore) can work better.
+        for variant in mutate(entry.expression, kinds={"normalizer_swap"}):
+            if "zscore" in variant.description.split("->")[-1]:
+                actions.append(Action("concentrate", f"{variant.description}: raise returns instead of cutting turnover",
+                                      "Fitness = Sharpe^1.5 * sqrt(vol / turnover); a magnitude-weighted signal raises vol",
+                                      expression=variant.expression))
         for variant in mutate(entry.expression, kinds={"volume_event_gate", "decay_wrap"}):
             actions.append(_variant_action(variant, "smooth"))
         lessons.append(f"{entry.theme or 'signal'} at decay {settings.decay} had turnover {turnover:.0%}"

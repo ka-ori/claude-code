@@ -36,6 +36,15 @@ lessons that later evidence contradicts.
 
 ## Turnover and decay
 
+- Fast signals (intraday reversal): Decay 7 vs 5 and hump both cut turnover but lowered
+  Fitness, because Sharpe fell more (Fitness = Sharpe^1.5 * sqrt(vol / turnover)). Raising
+  returns instead worked: group_rank -> group_zscore(winsorize(.., std=3)) took Fitness
+  0.97 -> 1.04 at the same Sharpe (returns 8.6% -> 10.3%).
+- hump scale is relative to the book: hump=0.01 froze an intraday-reversal alpha
+  (turnover 0.61%, test Sharpe -1.83); 0.0002 was a usable setting. Start tiny.
+- Truncation 0.01 vs 0.08 is irrelevant for rank-based TOP3000 alphas (max weight
+  ~0.07% of book); it only binds for concentrated signals.
+
 ## Neutralization and universe
 
 ## Self-correlation
