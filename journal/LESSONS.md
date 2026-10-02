@@ -15,6 +15,13 @@ lessons that later evidence contradicts.
 - Same with ts_backfill(63) and industry grouping/neutralization: train Sharpe -0.01,
   test 0.97. Dividing by cap turns it into a value signal, which likely inherits value's
   flat 2010s and recent rebound. Cash vs short-term debt is dropped as a standalone idea.
+- Train window is 2019-2022; always read the yearly table, not just the aggregate.
+  "Improving" fundamentals flip with the risk-on/quality cycle: liquidity vs own history
+  (ts_rank 252) yearly Sharpe -2.33, -2.19, +0.52, +1.58; Piotroski-style composite
+  (d-liquidity, -d-leverage, d-profitability) -0.93, -1.79, +1.12, +1.46. Aggregate ~0.
+- cash_st / debt_st level, neutralized within subindustry AND size decile: -0.72, -0.01,
+  -1.61, -1.03 (aggregate -0.87). Reversed, "lean on cash vs same-size peers" is the
+  only version of this idea that is positive in every train year.
 
 ## Turnover and decay
 
