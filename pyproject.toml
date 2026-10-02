@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "alphagen"
+version = "0.1.0"
+description = "Local toolkit for researching WorldQuant BRAIN alphas with Claude in the chat interface"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []  # stdlib only: no Claude API key or BRAIN API access needed
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+alphagen = "alphagen.cli:main"
+
+[tool.setuptools]
+packages = ["alphagen", "alphagen.fastexpr"]
+
+[tool.setuptools.package-data]
+alphagen = ["data/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

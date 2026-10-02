@@ -1,0 +1,242 @@
+{
+  "_about": "Research themes grounded in published asset-pricing evidence. 'cluster' follows the 13 themes of Jensen, Kelly & Pedersen (2023) where applicable. Seeds are starting points, not submissions: every seed is checked by the validator in tests, but none has been simulated by this repo.",
+  "themes": [
+    {
+      "id": "short_term_reversal",
+      "name": "Short-term reversal",
+      "cluster": "short_term_reversal",
+      "hypothesis": "Last week's losers outperform last week's winners as liquidity-driven price pressure reverts.",
+      "mechanism": "Liquidity providers demand compensation for absorbing order imbalances; the reversal is stronger within industry, where common news is netted out.",
+      "citations": ["Jegadeesh (1990)", "Lehmann (1990)", "Da, Liu & Schaumburg (2014)"],
+      "horizon": "short",
+      "settings": {"decay": 4, "neutralization": "SUBINDUSTRY", "universe": "TOP3000"},
+      "seeds": [
+        "group_rank(-ts_sum(returns, 5), subindustry)",
+        "-ts_zscore(close / vwap, 5)"
+      ],
+      "cautions": ["High turnover by construction: start at Decay 4 and climb the decay ladder.", "Very crowded on BRAIN; expect self-correlation against other reversal alphas."]
+    },
+    {
+      "id": "momentum",
+      "name": "Intermediate-horizon momentum (12-1)",
+      "cluster": "momentum",
+      "hypothesis": "Stocks with high returns over the past year, skipping the most recent month, keep outperforming.",
+      "mechanism": "Under-reaction to firm-specific news and gradual information diffusion; the skipped month avoids the short-term reversal.",
+      "citations": ["Jegadeesh & Titman (1993)", "Daniel & Moskowitz (2016)"],
+      "horizon": "long",
+      "settings": {"decay": 6, "neutralization": "INDUSTRY", "universe": "TOP3000"},
+      "seeds": [
+        "group_rank(ts_delay(close, 21) / ts_delay(close, 252), industry)",
+        "rank(ts_delay(ts_sum(returns, 231), 21))"
+      ],
+      "cautions": ["Momentum crashes after market rebounds; regime gating (calm_regime_gate) can help.", "Industry momentum and stock momentum differ: neutralization choice matters."]
+    },
+    {
+      "id": "gross_profitability",
+      "name": "Gross profitability",
+      "cluster": "profitability",
+      "hypothesis": "Firms with high gross profits relative to assets earn higher future returns.",
+      "mechanism": "Gross profit is the cleanest measure of economic productivity, less distorted by accounting choices further down the income statement.",
+      "citations": ["Novy-Marx (2013)", "Hou, Xue & Zhang (2015)"],
+      "horizon": "long",
+      "settings": {"decay": 0, "neutralization": "INDUSTRY", "universe": "TOP3000"},
+      "seeds": [
+        "group_rank((revenue - cogs) / assets, sector)",
+        "group_zscore(ts_backfill((revenue - cogs) / assets, 63), industry)"
+      ],
+      "cautions": ["Write (revenue - cogs) / assets with parentheses: revenue - cogs / assets divides only cogs.", "Low turnover: watch the 1% minimum and do not add decay."]
+    },
+    {
+      "id": "operating_profitability",
+      "name": "Return on equity / operating profitability",
+      "cluster": "profitability",
+      "hypothesis": "More profitable firms (high operating income per unit of book equity) have higher expected returns.",
+      "mechanism": "In the investment-based q-factor model, expected returns rise with expected profitability for a given investment level.",
+      "citations": ["Hou, Xue & Zhang (2015)", "Fama & French (2015)"],
+      "horizon": "long",
+      "settings": {"decay": 0, "neutralization": "INDUSTRY", "universe": "TOP3000"},
+      "seeds": [
+        "group_rank(operating_income / equity, sector)",
+        "group_rank(ts_delta(operating_income, 252) / assets, sector)"
+      ],
+      "cautions": ["Negative book equity makes the ratio meaningless: consider operating_income / assets as a robustness check."]
+    },
+    {
+      "id": "investment",
+      "name": "Asset growth / investment",
+      "cluster": "investment",
+      "hypothesis": "Firms that grow their asset base aggressively subsequently underperform.",
+      "mechanism": "Firms invest more when their cost of capital is low (investment CAPM), and investors extrapolate past growth.",
+      "citations": ["Cooper, Gulen & Schill (2008)", "Hou, Xue & Zhang (2015)"],
+      "horizon": "long",
+      "settings": {"decay": 0, "neutralization": "INDUSTRY", "universe": "TOP3000"},
+      "seeds": [
+        "group_rank(-(assets / ts_delay(assets, 252)), sector)",
+        "group_rank(-capex / assets, industry)"
+      ],
+      "cautions": ["Year-over-year changes in quarterly data are lumpy: ts_backfill before ts_delay if coverage is patchy."]
+    },
+    {
+      "id": "value",
+      "name": "Value",
+      "cluster": "value",
+      "hypothesis": "Cheap stocks (high fundamentals relative to price) outperform expensive ones.",
+      "mechanism": "Risk compensation for distressed firms and/or over-extrapolation of growth for expensive firms.",
+      "citations": ["Fama & French (1992)", "Fama & French (1993)", "Jensen, Kelly & Pedersen (2023)"],
+      "horizon": "long",
+      "settings": {"decay": 0, "neutralization": "INDUSTRY", "universe": "TOP3000"},
+      "seeds": [
+        "group_rank(ebit / enterprise_value, industry)",
+        "group_rank(equity / cap, industry)"
+      ],
+      "cautions": ["Valuation ratios differ structurally across industries: always compare within industry.", "Value has had long drawdowns; pair with quality to avoid value traps."]
+    },
+    {
+      "id": "accruals",
+      "name": "Accruals",
+      "cluster": "accruals",
+      "hypothesis": "Earnings backed by accruals rather than cash flow are less persistent; high-accrual firms underperform.",
+      "mechanism": "Investors fixate on reported earnings and under-weight the lower persistence of the accrual component.",
+      "citations": ["Sloan (1996)"],
+      "horizon": "long",
+      "settings": {"decay": 0, "neutralization": "SUBINDUSTRY", "universe": "TOP3000"},
+      "seeds": [
+        "group_rank(-(operating_income - cashflow_op) / assets, sector)"
+      ],
+      "cautions": ["Cash flow and income may update on different dates; ts_backfill both if coverage is uneven."]
+    },
+    {
+      "id": "liquidity_safety",
+      "name": "Short-term liquidity / balance-sheet safety",
+      "cluster": "quality",
+      "hypothesis": "Firms that can cover short-term debt with liquid assets are safer and outperform peers that cannot.",
+      "mechanism": "Financial distress risk is mispriced; investors underreact to weak short-term solvency.",
+      "citations": ["Asness, Frazzini & Pedersen (2019)", "Campbell, Hilscher & Szilagyi (2008)"],
+      "horizon": "long",
+      "settings": {"decay": 0, "neutralization": "SUBINDUSTRY", "universe": "TOP3000"},
+      "seeds": [
+        "group_rank(operating_income / assets, subindustry) - group_rank(cash_st / debt_st, subindustry)",
+        "group_rank(operating_income / assets, subindustry) - group_rank(cash_st / (cash_st + debt_st), subindustry)"
+      ],
+      "cautions": [
+        "Observed on BRAIN (USA TOP3000 D1, subindustry): group_zscore(cash_st / debt_st, subindustry) Sharpe -0.79 and group_rank(ts_backfill(cash_st, 63) / ts_backfill(debt_st, 63), subindustry) Sharpe -0.83. The raw liquidity ratio has the opposite sign to the hypothesis: cash-rich firms with little short-term debt are often unprofitable growth firms, while mature profitable firms run lean on cash. The seeds pair the flipped ratio with profitability.",
+        "Firms with near-zero short-term debt produce extreme ratios; cash_st / (cash_st + debt_st) stays in [0, 1]."
+      ]
+    },
+    {
+      "id": "quality",
+      "name": "Quality (profitable, safe, low leverage)",
+      "cluster": "quality",
+      "hypothesis": "High-quality firms (profitable, stable, conservatively financed) earn higher risk-adjusted returns.",
+      "mechanism": "Investors overpay for speculative 'junk' and underpay for boring quality.",
+      "citations": ["Asness, Frazzini & Pedersen (2019)"],
+      "horizon": "long",
+      "settings": {"decay": 0, "neutralization": "INDUSTRY", "universe": "TOP3000"},
+      "seeds": [
+        "group_rank(operating_income / assets, sector) + group_rank(-debt / assets, sector)"
+      ],
+      "cautions": ["Composite scores correlate with plain profitability alphas; check structural similarity first."]
+    },
+    {
+      "id": "leverage_debt_issuance",
+      "name": "Debt issuance",
+      "cluster": "debt_issuance",
+      "hypothesis": "Firms that raise new debt subsequently underperform firms that pay it down.",
+      "mechanism": "Managers issue when financing is cheap or the firm is overvalued; analysts are over-optimistic about issuers.",
+      "citations": ["Bradshaw, Richardson & Sloan (2006)"],
+      "horizon": "long",
+      "settings": {"decay": 0, "neutralization": "INDUSTRY", "universe": "TOP3000"},
+      "seeds": [
+        "group_rank(-ts_delta(debt, 252) / assets, sector)"
+      ],
+      "cautions": ["Utilities and financials use leverage structurally: industry comparison is essential."]
+    },
+    {
+      "id": "low_risk",
+      "name": "Low risk (volatility / beta)",
+      "cluster": "low_risk",
+      "hypothesis": "Low-volatility stocks earn higher risk-adjusted returns than high-volatility stocks.",
+      "mechanism": "Leverage-constrained investors bid up high-risk stocks (Frazzini & Pedersen 2014). Novy-Marx & Velikov (2022) show the BAB result depends on micro-cap-heavy weighting and costs, so implement it only in liquid universes with heavy smoothing.",
+      "citations": ["Ang, Hodrick, Xing & Zhang (2006)", "Frazzini & Pedersen (2014)", "Novy-Marx & Velikov (2022)", "Campbell & Vuolteenaho (2004)"],
+      "horizon": "long",
+      "settings": {"decay": 10, "neutralization": "SUBINDUSTRY", "universe": "TOP1000"},
+      "seeds": [
+        "rank(-ts_std_dev(returns, 252))",
+        "rank(-ts_std_dev(returns, 126)) + rank(ts_delta(cashflow_op, 252) / assets)"
+      ],
+      "cautions": ["Avoid TOP3000 tails: the anomaly concentrates in illiquid names.", "Second seed shorts high-volatility firms with deteriorating cash flows (a 'bad beta' tilt), not volatility alone."]
+    },
+    {
+      "id": "seasonality",
+      "name": "Return seasonality",
+      "cluster": "seasonality",
+      "hypothesis": "Stocks tend to earn similar returns in the same calendar month across years.",
+      "mechanism": "Recurring flows and information events (earnings timing, fiscal-year effects) repeat annually.",
+      "citations": ["Heston & Sadka (2008)"],
+      "horizon": "medium",
+      "settings": {"decay": 2, "neutralization": "SUBINDUSTRY", "universe": "TOP3000"},
+      "seeds": [
+        "group_rank(ts_delay(ts_sum(returns, 21), 231), subindustry)"
+      ],
+      "cautions": ["ts_delay(ts_sum(returns, 21), 231) is the return over the same upcoming month one year ago."]
+    },
+    {
+      "id": "high_volume",
+      "name": "High-volume return premium",
+      "cluster": "alternative",
+      "hypothesis": "Stocks with unusually high recent trading volume subsequently outperform.",
+      "mechanism": "Volume shocks raise visibility and investor attention, increasing demand.",
+      "citations": ["Gervais, Kaniel & Mingelgrin (2001)"],
+      "horizon": "short",
+      "settings": {"decay": 4, "neutralization": "SUBINDUSTRY", "universe": "TOP3000"},
+      "seeds": [
+        "group_rank(ts_mean(volume, 5) / ts_mean(volume, 60), subindustry)"
+      ],
+      "cautions": ["Volume ratios spike around earnings; combine with trade_when gating to make it event-driven."]
+    },
+    {
+      "id": "economic_links",
+      "name": "Customer-supplier momentum",
+      "cluster": "alternative",
+      "hypothesis": "Returns of a firm's major customers predict the firm's own returns because the news reaches suppliers with a lag.",
+      "mechanism": "Limited investor attention: information about linked firms diffuses slowly.",
+      "citations": ["Cohen & Frazzini (2008)"],
+      "horizon": "medium",
+      "settings": {"decay": 4, "neutralization": "INDUSTRY", "universe": "TOP3000"},
+      "seeds": [],
+      "templates": [
+        "group_mean(ts_sum(returns, 21), 1, <customer_group_field>) - ts_sum(returns, 21)"
+      ],
+      "cautions": ["Needs a relationship/supply-chain dataset; find the grouping or vector fields on the BRAIN Data page and add them to the field dictionary first.", "Relationship vector fields must be collapsed with vec_avg/vec_sum before any matrix operator."]
+    },
+    {
+      "id": "earnings_drift",
+      "name": "Post-earnings announcement drift / analyst revisions",
+      "cluster": "alternative",
+      "hypothesis": "Prices under-react to earnings surprises and analyst revisions, drifting in the direction of the news for weeks.",
+      "mechanism": "Investors under-weight the persistence of earnings news.",
+      "citations": ["Bernard & Thomas (1989)"],
+      "horizon": "medium",
+      "settings": {"decay": 4, "neutralization": "SUBINDUSTRY", "universe": "TOP3000"},
+      "seeds": [],
+      "templates": [
+        "trade_when(days_from_last_change(<eps_estimate_field>) < 5, group_rank(ts_delta(<eps_estimate_field>, 21) / close, subindustry), -1)"
+      ],
+      "cautions": ["Needs analyst-estimate fields; confirm IDs on the BRAIN Data page.", "Event gating with trade_when makes this naturally low-correlation."]
+    },
+    {
+      "id": "size",
+      "name": "Size",
+      "cluster": "size",
+      "hypothesis": "Smaller firms earn higher returns than larger firms, mainly once junk is controlled for.",
+      "mechanism": "Compensation for illiquidity and neglect.",
+      "citations": ["Fama & French (1993)", "Asness, Frazzini, Israel, Moskowitz & Pedersen (2018)"],
+      "horizon": "long",
+      "settings": {"decay": 0, "neutralization": "INDUSTRY", "universe": "TOP3000"},
+      "seeds": [
+        "group_rank(-log(cap), industry) + group_rank(operating_income / assets, industry)"
+      ],
+      "cautions": ["The raw size effect is weak in liquid universes; use it as a tilt inside other ideas rather than alone."]
+    }
+  ]
+}
