@@ -34,9 +34,10 @@ lessons that later evidence contradicts.
 
 ## Self-correlation
 
-- Adding any short-term reversal leg (close-to-close or intraday, 30% weight) to the
-  operating-income alpha pushed self-correlation from 0.29 (A0002) to 0.79-0.8+ (A0004,
-  A0007): the portfolio already carries reversal. Keep reversal out of new alphas.
-  Orthogonalizing against A0001 by hand (A0008) killed performance.
+- Operating income / price vs its own 1-year history (A0002: ts_zscore(oi / enterprise_value, 252))
+  has self-correlation 0.88 with the submitted A0001 (ts_rank(oi / cap, 252) + reversal): same bet.
+  Reversal legs were not the cause (A0004 blend 0.79, A0007 >0.8). To decorrelate, change the
+  structure: freeze positions between filings, or keep price out of the time comparison.
+  (An earlier reading of 0.29 came from a cropped screenshot; ask for the number in text.)
 
 ## Themes that are crowded or dead
