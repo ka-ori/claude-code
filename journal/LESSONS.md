@@ -34,4 +34,9 @@ lessons that later evidence contradicts.
 
 ## Self-correlation
 
+- Adding any short-term reversal leg (close-to-close or intraday, 30% weight) to the
+  operating-income alpha pushed self-correlation from 0.29 (A0002) to 0.79-0.8+ (A0004,
+  A0007): the portfolio already carries reversal. Keep reversal out of new alphas.
+  Orthogonalizing against A0001 by hand (A0008) killed performance.
+
 ## Themes that are crowded or dead
