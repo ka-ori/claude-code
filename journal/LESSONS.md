@@ -28,6 +28,12 @@ lessons that later evidence contradicts.
   test 2023 -0.58. About 11 simulations on this one hypothesis with no stable edge:
   stop. Tutorial hint examples are not guaranteed to pass in the current IS window.
 
+- Operating-income improvement alphas without a reversal leg all share one yearly shape:
+  weak 2019, negative 2020, strong 2021-2022, negative 2023 (A0002, A0009, A0010, A0011).
+  Tweaking the fundamental part does not fix it; A0001's reversal leg is what carries
+  those years. Self-correlation with A0001: ratio-vs-own-history 0.88, event-gated 0.74,
+  profitability blend 0.68, yoy change / EV 0.53 (lowest).
+
 ## Turnover and decay
 
 ## Neutralization and universe
