@@ -9,6 +9,9 @@ lessons that later evidence contradicts.
   the "safe firms outperform" story: group_zscore Sharpe -0.79, group_rank with
   ts_backfill Sharpe -0.83 (logged before the journal existed). Cash-rich, low-debt firms
   skew to unprofitable growth names.
+- (cash_st - debt_st) / cap, group_rank by subindustry (USA TOP3000 D1, subindustry
+  neutralization): train Sharpe 0.01, test Sharpe 1.02. No edge over the train period,
+  so the test number is not evidence. Read train/test splits before tuning.
 
 ## Turnover and decay
 
