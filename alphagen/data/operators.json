@@ -85,7 +85,7 @@
     {"sig": "quantile(x:matrix, driver:string=\"gaussian\", sigma:number=1.0)", "cat": "cross_sectional", "doc": "Rank mapped through the inverse CDF of the driver distribution."},
     {"sig": "winsorize(x:matrix, std:number=4)", "cat": "cross_sectional", "doc": "Clip x to mean +/- std standard deviations. Takes ONE positional argument; pass std by keyword."},
     {"sig": "truncate(x:matrix, maxPercent:number=0.01)", "cat": "cross_sectional", "doc": "Cap each weight at maxPercent of the book.", "ranges": {"maxPercent": [0, 1]}},
-    {"sig": "regression_neut(y:matrix, x:matrix)", "cat": "cross_sectional", "doc": "Residual of the cross-sectional regression of y on x (removes x exposure)."},
+    {"sig": "regression_neut(y:matrix, x:matrix)", "cat": "cross_sectional", "doc": "Residual of the cross-sectional regression of y on x (removes x exposure).", "unavailable": true},
     {"sig": "regression_proj(y:matrix, x:matrix)", "cat": "cross_sectional", "doc": "Fitted part of the cross-sectional regression of y on x."},
     {"sig": "vector_neut(x:matrix, y:matrix)", "cat": "cross_sectional", "doc": "x with its projection onto y removed."},
     {"sig": "vector_proj(x:matrix, y:matrix)", "cat": "cross_sectional", "doc": "Projection of x onto y."},
